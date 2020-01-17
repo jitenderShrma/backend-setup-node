@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+const keys = require('../../config/keys');
+
 exports.loginUser = function(req, res){
     const user = {
         email: req.body.email,
@@ -29,7 +31,7 @@ exports.loginUser = function(req, res){
                         email: user.dataValues.email
                     }
                     // create token
-                    jwt.sign(payload, 'secret',{expiresIn:'1h'}, (err, token) => {
+                    jwt.sign(payload, keys.secret,{expiresIn:'1h'}, (err, token) => {
                         if(err){
                             console.log(err);
                         } else {
