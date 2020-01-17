@@ -1,0 +1,25 @@
+{
+  "name": "pms",
+  "version": "1.0.0",
+  "description": "Project Management System",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Hitachi MGRM",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "pg": "^7.17.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
