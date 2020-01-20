@@ -3,13 +3,13 @@ const bcrypt = require('bcryptjs');
 
 const keys = require('../../config/keys');
 
-exports.loginUser = function(req, res){
+exports.loginUser = function (req, res) {
     const user = {
         email: req.body.email,
         password: req.body.password
     }
-    db.auth.findOne({where: {email: req.body.email}}).then(user => {
-        if(user == null){
+    db.auth.findOne({ where: { email: req.body.email } }).then(user => {
+        if (user == null) {
             const errors = {
                 email: 'user not found with this email'
             };
@@ -17,9 +17,9 @@ exports.loginUser = function(req, res){
         } else {
             // check for password
             bcrypt.compare(req.body.password, user.dataValues.password, (err, isMatch) => {
-                if(!isMatch){
+                if (!isMatch) {
                     const errors = {
-                        password:'Password not match'
+                        password: 'Password not match'
                     };
                     return res.status(404).json(errors);
                 } else {
@@ -31,44 +31,52 @@ exports.loginUser = function(req, res){
                         email: user.dataValues.email
                     }
                     // create token
-                    jwt.sign(payload, keys.secret,{expiresIn:'1h'}, (err, token) => {
-                        if(err){
+                    jwt.sign(payload, keys.secret, { expiresIn: '1h' }, (err, token) => {
+                        if (err) {
                             console.log(err);
                         } else {
                             // send token
                             token = `Bearer ${token}`;
-                            res.status(200).json({success: true, token});
+                            res.status(200).json({ success: true, token });
                         }
                     });
                 }
             });
         }
     })
-    .catch(error => console.log(error));
+        .catch(error => console.log(error));
 }
 
-exports.registerUser = function(req, res){
-    const newUser = {
-        firstName: req.body.firstName,
-        lastName: req.body.firstName,
-        email: req.body.email,
-        password: req.body.password
-    }
-
-    // generate salt
-    bcrypt.genSalt(10, (err, salt) => {
-        // has to password
-        bcrypt.hash(newUser.password, salt, (err, hash) => {
-            newUser.password = hash;
-            // save to db
-            db.auth.create(newUser)
-              .then(() => res.status(200).json({success: true}))
-              .catch(error => console.log(error));
-        });
-    });
+exports.registerUser = function (req, res) {
+    // check if email already exist
+    db.auth.findOne({ where: { email: req.body.email } })
+        .then(user => {
+            if (user == null) {
+                const newUser = {
+                    firstName: req.body.firstName,
+                    lastName: req.body.firstName,
+                    email: req.body.email,
+                    password: req.body.password
+                }
+                // generate salt
+                bcrypt.genSalt(10, (err, salt) => {
+                    // has to password
+                    bcrypt.hash(newUser.password, salt, (err, hash) => {
+                        newUser.password = hash;
+                        // save to db
+                        db.auth.create(newUser)
+                            .then(() => res.status(200).json({ success: true }))
+                            .catch(error => console.log(error));
+                    });
+                });
+            } else {
+                res.status(409).json({ email: 'Email already exist.' });
+            }
+        })
+        .catch(error => console.log(error));
 }
 
-exports.logoutUser = function(req, res){
+exports.logoutUser = function (req, res) {
     console.log('logoutUser', req.body);
     return res.send('logoutUser')
 }
